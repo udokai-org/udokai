@@ -1,0 +1,19 @@
+[package]
+name = "dokai"
+version = "0.1.0"
+authors = ["cristianoliveira <contato@cristianoliveira.com.br>"]
+edition = "2021"
+
+[dependencies]
+dioxus.workspace = true
+dioxus-logger.workspace = true
+gui.workspace = true
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.dependencies]
+dioxus = { version = "0.5", features = ["desktop"] }
+dioxus-logger = "0.5.1"
+gui = { path = "gui" }
+
+[workspace]
+members = [ "gui" ]
