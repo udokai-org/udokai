@@ -7,12 +7,11 @@ pkgs.mkShell {
     cargo
     rustfmt
     libiconv
-    xdotool
 
     dioxus-cli
-
     # dioxux deps
     # openssl
+  ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
     pkg-config
     libusb
     libusb1
@@ -20,5 +19,12 @@ pkgs.mkShell {
     cairo
     libsoup_3
     webkitgtk_4_1
-  ];
+    xdotool
+  ]) ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+    IOKit
+    Carbon
+    WebKit
+    Security
+    Cocoa
+  ]);
 }
