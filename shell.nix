@@ -1,7 +1,13 @@
 {
   pkgs ? import <nixpkgs> {}
 }:
-pkgs.mkShell {
+let
+  libPath = with pkgs; lib.makeLibraryPath [
+    libGL
+    libxkbcommon
+    wayland
+  ];
+in pkgs.mkShell {
   packages = with pkgs; [
     rustc
     cargo
@@ -13,7 +19,6 @@ pkgs.mkShell {
     # openssl
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
     pkg-config
-    libusb
     libusb1
     libusb1.dev
     cairo
@@ -27,4 +32,12 @@ pkgs.mkShell {
     Security
     Cocoa
   ]);
+
+  RUST_LOG = "debug";
+  RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+  LD_LIBRARY_PATH = libPath;
+
+  shellHook = ''
+    ${pkgs.cargo}/bin/cargo update
+  '';
 }

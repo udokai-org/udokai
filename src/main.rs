@@ -1,5 +1,6 @@
-use gui::show;
+// use gui::show;
+use guiced::show;
 
 pub fn main() {
-    show();
+    show().expect("Failed to show GUI");
 }

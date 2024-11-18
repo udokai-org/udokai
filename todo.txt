@@ -1,0 +1,3 @@
+# Possible features
+
+- browse history with up/down arrows

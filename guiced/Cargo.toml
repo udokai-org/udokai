@@ -1,0 +1,15 @@
+[package]
+name = "guiced"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iced = "0.13.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+async-std = "1.13.0"               # Async version of the Rust standard library
+uuid = { version = "1.0", features = ["v4", "fast-rng", "serde"] }
+directories-next = "2.0"
+tracing-subscriber = "0.3"
