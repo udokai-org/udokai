@@ -1,4 +1,4 @@
-use iced::keyboard;
+use iced::{keyboard, Padding};
 use iced::widget::{
     self, button, center, checkbox, column, container, keyed_column, row,
     scrollable, text, text_input, Text,
@@ -56,12 +56,7 @@ impl Todos {
     }
 
     fn title(&self) -> String {
-        let dirty = match self {
-            Todos::Loading => false,
-            Todos::Loaded(state) => state.dirty,
-        };
-
-        format!("Todos{} - Iced", if dirty { "*" } else { "" })
+        format!("udokai")
     }
 
     fn update(&mut self, message: Message) -> Command<Message> {
@@ -188,12 +183,6 @@ impl Todos {
                 tasks,
                 ..
             }) => {
-                let title = text("todos")
-                    .width(Fill)
-                    .size(100)
-                    .color([0.5, 0.5, 0.5])
-                    .align_x(Center);
-
                 let input = text_input("What needs to be done?", input_value)
                     .id("new-task")
                     .on_input(Message::InputChanged)
@@ -233,11 +222,13 @@ impl Todos {
                     })
                 };
 
-                let content = column![title, input, controls, tasks]
-                    .spacing(20)
+                let content = column![input, controls, tasks]
+                    .spacing(0)
                     .max_width(800);
 
-                scrollable(container(content).center_x(Fill).padding(40)).into()
+                let padding = Padding::ZERO;
+
+                scrollable(container(content).center_x(Fill).padding(padding)).into()
             }
         }
     }
