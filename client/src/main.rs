@@ -1,52 +1,91 @@
 use tokio::net::UnixStream;
-use tokio::io::{AsyncWriteExt, AsyncBufReadExt, BufReader};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, stdin};
+use serde_json::json;
 use std::fs;
 
 #[tokio::main]
-pub async fn main() -> std::io::Result<()> {
+async fn main() -> std::io::Result<()> {
     // List of server socket paths
     let server_sockets = vec![
         "/tmp/server1.sock",
         // "/tmp/server2.sock",
-        // Add more paths as needed
+        // Add more server paths as needed
     ];
 
-    let mut tasks = vec![];
-
-    for socket_path in server_sockets {
-        // Check if the socket exists before trying to connect
-        if fs::metadata(socket_path).is_ok() {
-            let path = socket_path.to_string();
-            tasks.push(tokio::spawn(async move {
-                query_server(&path).await
-            }));
+    // Connect to all servers
+    let mut connections = vec![];
+    for server_socket in server_sockets {
+        if fs::metadata(server_socket).is_ok() {
+            let path = server_socket.to_string();
+            if let Ok(stream) = UnixStream::connect(&path).await {
+                connections.push((path, stream));
+            } else {
+                eprintln!("Failed to connect to server: {}", path);
+            }
+        } else {
+            eprintln!("Server socket not found: {}", server_socket);
         }
     }
 
-    // Collect all responses
-    let results = futures::future::join_all(tasks).await;
+    if connections.is_empty() {
+        eprintln!("No servers available. Exiting.");
+        return Ok(());
+    }
 
-    for (i, result) in results.iter().enumerate() {
-        match result {
-            Ok(response) => println!("CLIENT: Server {} responded: {:?}", i + 1, response),
-            Err(e) => eprintln!("CLIENT: Error with server {}: {}", i + 1, e),
+    println!("Client is ready. Send input via stdin.");
+
+    // Read input from stdin
+    let stdin = stdin();
+    let mut stdin_reader = BufReader::new(stdin);
+    let mut buffer = String::new();
+
+    loop {
+        buffer.clear();
+        let bytes_read = stdin_reader.read_line(&mut buffer).await?;
+        if bytes_read == 0 {
+            break; // End of input
+        }
+
+        println!("@@@@@@@@@ buffer {:?}", buffer);
+
+        let input = buffer.trim();
+        if input.is_empty() {
+            continue; // Ignore empty lines
+        }
+
+        // Send the input to all servers
+        let event = json!({
+            "event": "user_input",
+            "data": input,
+        });
+
+        for (path, stream) in &mut connections {
+            if let Err(e) = send_event_to_server(stream, event.clone()).await {
+                eprintln!("Error communicating with server {}: {}", path, e);
+            }
         }
     }
+
+    println!("Client exiting...");
+    Ok(())
+}
+
+// Function to communicate with a single server
+async fn send_event_to_server(stream: &mut UnixStream, event: serde_json::Value) -> std::io::Result<()> {
+    let (reader, mut writer) = stream.split();
+    let mut reader = BufReader::new(reader);
+
+    // Send the user input event to the server
+    writer.write_all(event.to_string().as_bytes()).await?;
+    writer.write_all(b"\n").await?;
+    writer.flush().await?;
+    println!("Sent to server: {}", event);
+
+    // Read the server's response
+    let mut response = String::new();
+    reader.read_line(&mut response).await?;
+    println!("Received from server: {}", response.trim());
 
     Ok(())
 }
 
-async fn query_server(socket_path: &str) -> std::io::Result<String> {
-    let stream = UnixStream::connect(socket_path).await?;
-    let (reader, mut writer) = stream.into_split();
-
-    // Send a trigger
-    writer.write_all(b"trigger_query\n").await?;
-    writer.flush().await?;
-
-    // Read the response
-    let mut reader = BufReader::new(reader);
-    let mut response = String::new();
-    reader.read_line(&mut response).await?;
-    Ok(response.trim().to_string())
-}
