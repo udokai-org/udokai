@@ -1,8 +1,14 @@
 // use gui::show;
 // use guiced::show;
+use tui;
+
 use std::{io::{BufRead, BufReader, Write}, process::Stdio};
 
-fn main() -> std::io::Result<()> {
+fn main () {
+    tui::show();
+}
+
+fn _main() -> std::io::Result<()> {
     // run client binary
     let mut client = std::process::Command::new("target/debug/client")
         .stdin(Stdio::piped())
@@ -46,6 +52,8 @@ fn main() -> std::io::Result<()> {
     let status = client.wait()?;
     println!("Client exited with status: {}", status);
 
+    client.kill()?;
+    server.kill()?;
+
     Ok(())
 }
-
