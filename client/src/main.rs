@@ -5,6 +5,9 @@ use std::fs;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    shared::setup_logger("/tmp/client.log")
+        .expect("Failed to setup logger on client");
+
     // List of server socket paths
     let server_sockets = vec![
         "/tmp/server1.sock",
@@ -20,19 +23,19 @@ async fn main() -> std::io::Result<()> {
             if let Ok(stream) = UnixStream::connect(&path).await {
                 connections.push((path, stream));
             } else {
-                eprintln!("Failed to connect to server: {}", path);
+                log::info!("Failed to connect to server: {}", path);
             }
         } else {
-            eprintln!("Server socket not found: {}", server_socket);
+            log::info!("Server socket not found: {}", server_socket);
         }
     }
 
     if connections.is_empty() {
-        eprintln!("No servers available. Exiting.");
+        log::info!("No servers available. Exiting.");
         return Ok(());
     }
 
-    println!("Client is ready. Send input via stdin.");
+    log::info!("Client is ready. Send input via stdin.");
 
     // Read input from stdin
     let stdin = stdin();
@@ -46,7 +49,7 @@ async fn main() -> std::io::Result<()> {
             break; // End of input
         }
 
-        println!("@@@@@@@@@ buffer {:?}", buffer);
+        log::info!("@@@@@@@@@ buffer {:?}", buffer);
 
         let input = buffer.trim();
         if input.is_empty() {
@@ -61,12 +64,12 @@ async fn main() -> std::io::Result<()> {
 
         for (path, stream) in &mut connections {
             if let Err(e) = send_event_to_server(stream, event.clone()).await {
-                eprintln!("Error communicating with server {}: {}", path, e);
+                log::info!("Error communicating with server {}: {}", path, e);
             }
         }
     }
 
-    println!("Client exiting...");
+    log::info!("Client exiting...");
     Ok(())
 }
 
@@ -79,12 +82,12 @@ async fn send_event_to_server(stream: &mut UnixStream, event: serde_json::Value)
     writer.write_all(event.to_string().as_bytes()).await?;
     writer.write_all(b"\n").await?;
     writer.flush().await?;
-    println!("Sent to server: {}", event);
+    log::info!("Sent to server: {}", event);
 
     // Read the server's response
     let mut response = String::new();
     reader.read_line(&mut response).await?;
-    println!("Received from server: {}", response.trim());
+    log::info!("Received from server: {}", response.trim());
 
     Ok(())
 }

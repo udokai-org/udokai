@@ -5,6 +5,9 @@ use std::fs;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    shared::setup_logger("/tmp/server1.log")
+        .expect("Failed to setup logger on server");
+
     let socket_path = "/tmp/server1.sock";
 
     // Clean up old socket file if it exists
@@ -13,7 +16,8 @@ async fn main() -> std::io::Result<()> {
     }
 
     let listener = UnixListener::bind(socket_path)?;
-    println!("Server listening on {}", socket_path);
+
+    log::info!("Server listening on {}", socket_path);
 
     loop {
         let (stream, _) = listener.accept().await?;
@@ -26,7 +30,7 @@ async fn handle_client(stream: UnixStream) -> std::io::Result<()> {
     let mut reader = BufReader::new(reader);
     let mut buffer = String::new();
 
-    println!("New client connected!");
+    log::info!("New client connected!");
 
     loop {
         buffer.clear();
@@ -35,14 +39,14 @@ async fn handle_client(stream: UnixStream) -> std::io::Result<()> {
         let bytes_read = reader.read_line(&mut buffer).await?;
         if bytes_read == 0 {
             // Client disconnected
-            println!("Client disconnected.");
+            log::info!("Client disconnected.");
             break;
         }
 
         // Parse the JSON message
         match serde_json::from_str::<Value>(&buffer.trim()) {
             Ok(message) => {
-                println!("Received from client: {}", message);
+                log::info!("Received from client: {}", message);
 
                 // Create a response
                 let response = json!({
@@ -56,7 +60,7 @@ async fn handle_client(stream: UnixStream) -> std::io::Result<()> {
                 writer.flush().await?;
             }
             Err(e) => {
-                eprintln!("Failed to parse message: {}", e);
+                log::error!("Failed to parse message: {}", e);
             }
         }
     }
