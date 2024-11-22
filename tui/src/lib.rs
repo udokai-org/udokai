@@ -31,16 +31,17 @@ struct App {
 }
 
 impl Default for App {
-    fn default() -> App {
+    fn default() -> Self {
         App {
             input: Input::default(),
             input_mode: InputMode::Normal,
             messages: Vec::new(),
         }
     }
+
 }
 
-pub fn show() -> Result<(), Box<dyn Error>> {
+pub fn show(on_input: impl FnMut(String) + 'static) -> Result<(), Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -50,7 +51,7 @@ pub fn show() -> Result<(), Box<dyn Error>> {
 
     // create app and run it
     let app = App::default();
-    let res = run_app(&mut terminal, app);
+    let res = run_app(&mut terminal, app, on_input);
 
     // restore terminal
     disable_raw_mode()?;
@@ -68,7 +69,11 @@ pub fn show() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
+fn run_app<B: Backend>(
+    terminal: &mut Terminal<B>,
+    mut app: App,
+    mut on_input: impl FnMut(String) + 'static
+) -> io::Result<()> {
     loop {
         terminal.draw(|f| ui(f, &app))?;
 
@@ -93,6 +98,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<(
                     }
                     _ => {
                         app.input.handle_event(&Event::Key(key));
+                        on_input(app.input.value().to_string());
                     }
                 },
             }
