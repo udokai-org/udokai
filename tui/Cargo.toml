@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 ratatui = { version = "0.29.0", features = ["crossterm"] }
 tui-input = "0.11.0"
+shared.workspace = true
+log.workspace = true

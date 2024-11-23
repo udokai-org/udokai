@@ -37,7 +37,7 @@ in pkgs.mkShell {
   RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   LD_LIBRARY_PATH = libPath;
 
-  shellHook = ''
-    ${pkgs.cargo}/bin/cargo update
-  '';
+  # shellHook = ''
+  #   ${pkgs.cargo}/bin/cargo update
+  # '';
 }

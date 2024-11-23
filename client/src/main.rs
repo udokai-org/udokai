@@ -1,12 +1,14 @@
 use tokio::net::UnixStream;
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, stdin};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, stdin, stdout};
 use serde_json::json;
-use std::fs;
+use std::{fs, io};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     shared::setup_logger("/tmp/client.log")
         .expect("Failed to setup logger on client");
+
+    log::info!("-----------------------");
 
     // List of server socket paths
     let server_sockets = vec![
@@ -35,18 +37,20 @@ async fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    log::info!("Client is ready. Send input via stdin.");
+    println!("Client is ready. Send input via stdin.");
 
     // Read input from stdin
     let stdin = stdin();
     let mut stdin_reader = BufReader::new(stdin);
     let mut buffer = String::new();
 
+    let mut stdout = stdout();
+
     loop {
         buffer.clear();
         let bytes_read = stdin_reader.read_line(&mut buffer).await?;
         if bytes_read == 0 {
-            break; // End of input
+            continue;
         }
 
         log::info!("@@@@@@@@@ buffer {:?}", buffer);
@@ -56,6 +60,10 @@ async fn main() -> std::io::Result<()> {
             continue; // Ignore empty lines
         }
 
+        if input == "exit" {
+            break; // Exit the loop
+        }
+
         // Send the input to all servers
         let event = json!({
             "event": "user_input",
@@ -63,10 +71,15 @@ async fn main() -> std::io::Result<()> {
         });
 
         for (path, stream) in &mut connections {
-            if let Err(e) = send_event_to_server(stream, event.clone()).await {
+            if let Err(e) = send_event_to_server(
+                stream, event.clone(), &mut stdout).await {
                 log::info!("Error communicating with server {}: {}", path, e);
             }
         }
+
+        stdout.write_all(b"{ \"event\": \"end\" }").await?;
+        stdout.write_all(b"\n").await?;
+        stdout.flush().await?;
     }
 
     log::info!("Client exiting...");
@@ -74,7 +87,11 @@ async fn main() -> std::io::Result<()> {
 }
 
 // Function to communicate with a single server
-async fn send_event_to_server(stream: &mut UnixStream, event: serde_json::Value) -> std::io::Result<()> {
+async fn send_event_to_server(
+    stream: &mut UnixStream,
+    event: serde_json::Value,
+    stdout: &mut tokio::io::Stdout,
+    ) -> std::io::Result<()> {
     let (reader, mut writer) = stream.split();
     let mut reader = BufReader::new(reader);
 
@@ -87,7 +104,9 @@ async fn send_event_to_server(stream: &mut UnixStream, event: serde_json::Value)
     // Read the server's response
     let mut response = String::new();
     reader.read_line(&mut response).await?;
-    log::info!("Received from server: {}", response.trim());
+    stdout.write_all(format!("Received from server: {}", response.trim()).as_bytes()).await?;
+    stdout.write_all(b"\n").await?;
+    stdout.flush().await?;
 
     Ok(())
 }

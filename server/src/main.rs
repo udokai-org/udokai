@@ -7,6 +7,7 @@ use std::fs;
 async fn main() -> std::io::Result<()> {
     shared::setup_logger("/tmp/server1.log")
         .expect("Failed to setup logger on server");
+    log::info!("-----------------------");
 
     let socket_path = "/tmp/server1.sock";
 

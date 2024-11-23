@@ -34,14 +34,22 @@ impl Default for App {
     fn default() -> Self {
         App {
             input: Input::default(),
-            input_mode: InputMode::Normal,
+            input_mode: InputMode::Editing,
             messages: Vec::new(),
         }
     }
 
 }
 
-pub fn show(on_input: impl FnMut(String) + 'static) -> Result<(), Box<dyn Error>> {
+pub struct Client {
+    stdin: std::process::ChildStdin,
+    stdout: std::process::ChildStdout,
+}
+
+pub fn show(
+    on_input: impl FnMut(String) + 'static,
+    handle_messages: impl FnMut(Vec<String>) -> Vec<String> + 'static,
+) -> Result<(), Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -51,7 +59,7 @@ pub fn show(on_input: impl FnMut(String) + 'static) -> Result<(), Box<dyn Error>
 
     // create app and run it
     let app = App::default();
-    let res = run_app(&mut terminal, app, on_input);
+    let res = run_app(&mut terminal, app, on_input, handle_messages);
 
     // restore terminal
     disable_raw_mode()?;
@@ -63,7 +71,7 @@ pub fn show(on_input: impl FnMut(String) + 'static) -> Result<(), Box<dyn Error>
     terminal.show_cursor()?;
 
     if let Err(err) = res {
-        println!("{:?}", err)
+        log::error!("{:?}", err)
     }
 
     Ok(())
@@ -72,7 +80,8 @@ pub fn show(on_input: impl FnMut(String) + 'static) -> Result<(), Box<dyn Error>
 fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
-    mut on_input: impl FnMut(String) + 'static
+    mut on_input: impl FnMut(String) + 'static,
+    mut handle_messages: impl FnMut(Vec<String>) -> Vec<String> + 'static,
 ) -> io::Result<()> {
     loop {
         terminal.draw(|f| ui(f, &app))?;
@@ -90,7 +99,6 @@ fn run_app<B: Backend>(
                 },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
-                        app.messages.push(app.input.value().into());
                         app.input.reset();
                     }
                     KeyCode::Esc => {
@@ -102,6 +110,15 @@ fn run_app<B: Backend>(
                     }
                 },
             }
+        }
+
+
+        log::info!("attempt to handle messages");
+        let messages = handle_messages(app.messages.clone());
+        log::info!("AFTER attempt to handle messages");
+        if messages.len() > app.messages.len() {
+            log::info!("Updating messages");
+            app.messages = messages;
         }
     }
 }
