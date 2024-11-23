@@ -2,6 +2,23 @@
 
 **THIS IS VERY MUCH A WORK IN PROGRESS.**
 
+## Problem
+
+At work I use MacOS and at home Linux. I have to keep 2 version for configurations of the same tools (Alfred and Ulauncher).
+I wanted to have one unique configuration and same UX for both systems.  
+
+### Current Solutions
+
+ - [Alfred](https://www.alfredapp.com/) MacOS only
+ - [Ulauncher](https://ulauncher.io/) Linux only
+ - [Raycast](https://raycast.com/) MacOS only
+ - [Albert](https://albertlauncher.github.io/) Linux only
+ - rofi/wofi/dmenu - All linux only
+ 
+Hopefully, this project will be a solution for me and for others that have the same need :)
+
+## Architecture
+
 [Architecture](https://excalidraw.com/#json=GmWGK8vX4JbHzk3Mue1ka,uMhpuff-yz6ABxDl2o4R6w)
 
 ## Sequence Diagram
