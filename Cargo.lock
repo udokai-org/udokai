@@ -6160,6 +6160,7 @@ name = "udokai"
 version = "0.1.0"
 dependencies = [
  "client",
+ "crossterm",
  "dioxus",
  "dioxus-logger",
  "futures",

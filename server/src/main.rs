@@ -52,7 +52,7 @@ async fn handle_client(stream: UnixStream) -> std::io::Result<()> {
                 // Create a response
                 let response = json!({
                     "event": "server_response",
-                    "data": format!("Hello, client! Received: {}", message["event"]),
+                    "data": format!("Hello, client! Received: {} - {}", message["event"], message["data"]),
                 });
 
                 // Send the response back

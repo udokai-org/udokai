@@ -23,6 +23,7 @@ serde.workspace = true
 serde_json.workspace = true
 log.workspace = true
 log4rs.workspace = true
+crossterm = "0.28.1"
 
 [workspace.dependencies]
 dioxus = { version = "0.5", features = ["desktop"] }

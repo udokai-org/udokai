@@ -41,14 +41,8 @@ impl Default for App {
 
 }
 
-pub struct Client {
-    stdin: std::process::ChildStdin,
-    stdout: std::process::ChildStdout,
-}
-
 pub fn show(
-    on_input: impl FnMut(String) + 'static,
-    handle_messages: impl FnMut(Vec<String>) -> Vec<String> + 'static,
+    on_input: impl FnMut(String) -> Vec<String> + 'static,
 ) -> Result<(), Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
@@ -59,7 +53,7 @@ pub fn show(
 
     // create app and run it
     let app = App::default();
-    let res = run_app(&mut terminal, app, on_input, handle_messages);
+    let res = run_app(&mut terminal, app, on_input);
 
     // restore terminal
     disable_raw_mode()?;
@@ -80,8 +74,7 @@ pub fn show(
 fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
-    mut on_input: impl FnMut(String) + 'static,
-    mut handle_messages: impl FnMut(Vec<String>) -> Vec<String> + 'static,
+    mut on_input: impl FnMut(String) -> Vec<String> + 'static,
 ) -> io::Result<()> {
     loop {
         terminal.draw(|f| ui(f, &app))?;
@@ -106,19 +99,15 @@ fn run_app<B: Backend>(
                     }
                     _ => {
                         app.input.handle_event(&Event::Key(key));
-                        on_input(app.input.value().to_string());
+                        let msgs = on_input(app.input.value().to_string());
+
+                        if !msgs.is_empty() {
+                           app.messages.extend(msgs);
+                        }
+
                     }
                 },
             }
-        }
-
-
-        log::info!("attempt to handle messages");
-        let messages = handle_messages(app.messages.clone());
-        log::info!("AFTER attempt to handle messages");
-        if messages.len() > app.messages.len() {
-            log::info!("Updating messages");
-            app.messages = messages;
         }
     }
 }

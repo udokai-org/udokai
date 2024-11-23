@@ -77,9 +77,18 @@ async fn main() -> std::io::Result<()> {
             }
         }
 
-        stdout.write_all(b"{ \"event\": \"end\" }").await?;
-        stdout.write_all(b"\n").await?;
-        stdout.flush().await?;
+        match stdout.write_all(b"\n").await {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!("Failed to write to stdout: {}", e);
+            }
+        }
+        match stdout.flush().await {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!("Failed to flush stdout: {}", e);
+            }
+        }
     }
 
     log::info!("Client exiting...");
