@@ -1,10 +1,12 @@
-# Development
+# Udokai - The launcher for unix-like systems
 
-[Architecture](https://excalidraw.com/#json=kd7hKMw5Shu1wK_RhW9MW,R5Kt7fCOiAZ_w3l80mingg)
+**THIS IS VERY MUCH A WORK IN PROGRESS.**
+
+[Architecture](https://excalidraw.com/#json=GmWGK8vX4JbHzk3Mue1ka,uMhpuff-yz6ABxDl2o4R6w)
 
 ## Sequence Diagram
 
-The client and the server process will always be running in the background, to ensure it's snap to respond to the user's input. The client will forward the user's input to the server processes, and the server processes which if matches their trigger will respond with a list of items. The client is responsible for aggregate the responses
+The client and the server(s) process(es) will always be running in the background, to ensure it's snapyness to respond to the user's input. The client will forward the user's input to the servers, and if matches one or more of their trigger will respond with a list of items. The client is responsible for aggregate the responses
 
 ```mermaid
 sequenceDiagram
@@ -21,6 +23,34 @@ sequenceDiagram
     Server2-->>Client: Processed Response (e.g., "Action2")
     Client-->>GUI/TUI: Aggregated Responses ("Action1", "Action2")
 ```
+
+## TODOs / FEATURES
+
+- [x] Implement a basic client/server communication using UnixSocket
+- [x] Implement a basic TUI using ratatui for testing on the terminal
+- [x] Communication between TUI and Client via Stdin/Stdout
+- [ ] Handle server responses aggregation and display
+- [ ] Handle client command to server (selecting an item)
+- [ ] Implement a basic GUI using iced to use as the main interface
+- [ ] Implement protocol of communication between client and server
+    - [ ] Implement protocol for server to register triggers
+    - [ ] Implement protocol for client to send user input
+    - [ ] Implement protocol for server to respond with a list of items
+    - [ ] Implement protocol for client to send command to server to execute
+- [ ] Implement protocol for client to discover servers running dynamically (config? auto-discovery?)
+
+### Default Servers
+
+- [ ] Implement a server that return the list of Applications installed on the system
+- [ ] Implement a server that return the list of files in a directory
+- [ ] *Implement a server that return the list of Bluetooth devices and connect/disconnect to them
+
+* Maybe
+
+### DX
+
+- [ ] Implement a way to run the client and servers in the background for testing
+- [ ] Implement a integration test suite
 
 ## Development Environment
 
