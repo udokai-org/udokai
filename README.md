@@ -27,9 +27,9 @@ Hopefully, this project will be a solution for me and for others that have the s
 
 [Architecture](https://excalidraw.com/#json=GmWGK8vX4JbHzk3Mue1ka,uMhpuff-yz6ABxDl2o4R6w)
 
-## Sequence Diagram
+### Sequence Diagram
 
-The client and the server(s) process(es) will always be running in the background, to ensure it's snapyness to respond to the user's input. The client will forward the user's input to the servers, and if matches one or more of their trigger will respond with a list of items. The client is responsible for aggregate the responses
+The client and the server(s) process(es) will always be running in the background, to ensure its snapyness to respond to the user's input. The client will mutiplex the keypress events to the servers. The servers will process the keypress events and return a list of items to the client. The client will aggregate the responses and display them to the user. The user will select an item and the client will send the command to the server to execute the action. 
 
 ```mermaid
 sequenceDiagram
@@ -50,6 +50,16 @@ sequenceDiagram
     Client->>Server1: Send selected action (Action1)
     Server1->>OperationSystem: Execute Action1
 ```
+
+### Open questions and problems to solve
+
+On the context of the launcher a *plugin* will run a server that will be connected to the client. Allowing developers to create their own plugins to extend the launcher.
+
+    - How to make the plugins discoverable? or should they be configurable?
+    - How to translate the commands to the OS? (e.g., open an application, open a file, etc)
+     * Maybe each plugin server will be responsible to translate, or work on a specific OS only
+    - How to handle the aggregation of the responses from the servers?
+
 
 ## TODOs / FEATURES
 
