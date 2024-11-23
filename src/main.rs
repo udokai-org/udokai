@@ -10,13 +10,16 @@ fn main() -> std::io::Result<()> {
         .expect("Failed to setup logger on main");
     log::info!("-----------------------");
 
+    // Server is spawned as a separate process because it is not connected
+    // to the client directly. The client connects to the server via UnixSocket.
     let mut server = std::process::Command::new("target/debug/server")
         .spawn()
         .expect("Failed to run server binary");
 
-    // TODO: wait for server confirmation before starting client
+    // TODO: wait for server confirmation before starting client effectively
     std::thread::sleep(std::time::Duration::from_secs(1));
-    // Spawn the client process
+
+    // Spawn the client process to start listening to user input in UI
     let mut client = std::process::Command::new("target/debug/client")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -26,7 +29,6 @@ fn main() -> std::io::Result<()> {
 
     let client_stdin = Arc::new(Mutex::new(client.stdin));
     let client_stdout = client.stdout.take().expect("Failed to open stdout");
-    // let client_stdout = Arc::new(Mutex::new(client.stdout));
     let mutex_reader = Arc::new(Mutex::new(BufReader::new(client_stdout)));
 
 
@@ -73,6 +75,15 @@ fn main() -> std::io::Result<()> {
         Err(e) => {
             log::error!("Error: {}", e);
         }
+    }
+
+    // TODO kill client
+    // if let Err(e) = client.kill() {
+    //     log::error!("Failed to kill client: {}", e);
+    // }
+
+    if let Err(e) = server.kill() {
+        log::error!("Failed to kill server: {}", e);
     }
 
     Ok(())

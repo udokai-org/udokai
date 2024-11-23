@@ -1,7 +1,7 @@
 use tokio::net::UnixStream;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, stdin, stdout};
 use serde_json::json;
-use std::{fs, io};
+use std::fs;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

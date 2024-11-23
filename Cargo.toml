@@ -9,8 +9,6 @@ edition = "2021"
 # Internal pkgs
 # gui = { path = "gui" }
 # guiced = { path = "guiced" }
-client = { path = "client" }
-server = { path = "server" }
 tui = { path = "tui" }
 shared.workspace = true
 
