@@ -6164,8 +6164,6 @@ dependencies = [
  "dioxus",
  "dioxus-logger",
  "futures",
- "gui",
- "guiced",
  "log",
  "log4rs",
  "serde",
