@@ -4,15 +4,21 @@
 
 ## Problem
 
-At work I use MacOS and at home Linux. I have to keep 2 version for configurations of the same tools (Alfred and Ulauncher).
-I wanted to have one unique configuration and same UX for both systems.  
+At work I use MacOS and at home Linux (NixOs). I have to keep 2 configurations of the same kinda of tools (Alfred and Ulauncher).
+I wanted to have an unique configuration and the same UX for both systems.  
+
+Not to mention that versioning configuration for these tools is a pain, they weren't designed to be versioned.
+
+Udokai idea is to be simple but extensible launcher, that uses a standard configuration language, like Toml/Yaml, which can be easily versioned and used in any unix-like system.
+Its Architecture is heavily inspired by [pop-launcher](https://github.com/pop-os/launcher)
 
 ### Current Solutions
 
  - [Alfred](https://www.alfredapp.com/) MacOS only
- - [Ulauncher](https://ulauncher.io/) Linux only
  - [Raycast](https://raycast.com/) MacOS only
+ - [Ulauncher](https://ulauncher.io/) Linux only
  - [Albert](https://albertlauncher.github.io/) Linux only
+ - [onagre](https://github.com/onagre-launcher/onagre) Linux only (use pop-launcher as a backend)
  - rofi/wofi/dmenu - All linux only
  
 Hopefully, this project will be a solution for me and for others that have the same need :)
