@@ -1,4 +1,6 @@
-# Development
+# Udokai - The launcher for unix-like systems
+
+THIS IS VERY MUCH A WORK IN PROGRESS.
 
 [Architecture](https://excalidraw.com/#json=kd7hKMw5Shu1wK_RhW9MW,R5Kt7fCOiAZ_w3l80mingg)
 
