@@ -15,6 +15,7 @@ sequenceDiagram
     participant Client
     participant Server1
     participant Server2
+    participant OperationSystem
 
     GUI/TUI->>Client: Keypress Event 
     Client->>Server1: Forward Keypress Event
@@ -22,6 +23,9 @@ sequenceDiagram
     Server1-->>Client: Processed Response (e.g., "Action1")
     Server2-->>Client: Processed Response (e.g., "Action2")
     Client-->>GUI/TUI: Aggregated Responses ("Action1", "Action2")
+    GUI/TUI->>Client: Select an action (Action1)
+    Client->>Server1: Send selected action (Action1)
+    Server1->>OperationSystem: Execute Action1
 ```
 
 ## TODOs / FEATURES
