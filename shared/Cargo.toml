@@ -1,7 +1,9 @@
 [package]
-name = "shared"
+name = "udokai-shared"
 version = "0.0.1"
 edition = "2021"
+description = "The shared library for the Udokai project"
+license = "MIT"
 
 [dependencies]
 log.workspace = true

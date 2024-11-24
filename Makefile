@@ -10,3 +10,9 @@ run: ## Build all services and run the application
 	cargo build -p client
 	cargo build -p server
 	cargo run
+
+.PHONY: publish
+publish: ## Publish all the crates to crates.io
+	cargo publish --manifest-path shared/Cargo.toml || true
+	cargo publish --manifest-path tui/Cargo.toml || true
+	cargo publish

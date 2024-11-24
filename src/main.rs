@@ -1,6 +1,7 @@
 // use gui::show;
 // use guiced::show;
-use tui;
+use udokai_tui as tui;
+use udokai_shared as shared;
 
 use std::{io::{BufRead, BufReader, Write}, process::Stdio, sync::{Arc, Mutex}, thread};
 use std::process::{Command};

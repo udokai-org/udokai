@@ -145,8 +145,8 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
- "shared",
  "tokio",
+ "udokai-shared",
 ]
 
 [[package]]
@@ -877,16 +877,8 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
- "shared",
  "tokio",
-]
-
-[[package]]
-name = "shared"
-version = "0.0.1"
-dependencies = [
- "log",
- "log4rs",
+ "udokai-shared",
 ]
 
 [[package]]
@@ -1066,16 +1058,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tui"
-version = "0.0.1"
-dependencies = [
- "log",
- "ratatui",
- "shared",
- "tui-input",
-]
-
-[[package]]
 name = "tui-input"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1104,9 +1086,27 @@ dependencies = [
  "log4rs",
  "serde",
  "serde_json",
- "shared",
  "tokio",
- "tui",
+ "udokai-shared",
+ "udokai-tui",
+]
+
+[[package]]
+name = "udokai-shared"
+version = "0.0.1"
+dependencies = [
+ "log",
+ "log4rs",
+]
+
+[[package]]
+name = "udokai-tui"
+version = "0.0.1"
+dependencies = [
+ "log",
+ "ratatui",
+ "tui-input",
+ "udokai-shared",
 ]
 
 [[package]]

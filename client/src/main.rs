@@ -3,6 +3,8 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, stdin, stdout};
 use serde_json::json;
 use std::fs;
 
+use udokai_shared as shared;
+
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     shared::setup_logger("/tmp/client.log")

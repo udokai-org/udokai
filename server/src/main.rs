@@ -2,6 +2,7 @@ use tokio::net::{UnixListener, UnixStream};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use serde_json::{Value, json};
 use std::fs;
+use udokai_shared as shared;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
