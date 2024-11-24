@@ -66,6 +66,12 @@ On the context of the launcher a *plugin* will run a server that will be connect
 - [x] Implement a basic client/server communication using UnixSocket
 - [x] Implement a basic TUI using ratatui for testing on the terminal
 - [x] Communication between TUI and Client via Stdin/Stdout
+- [ ] Actor model for the client and servers to supervise the processes
+   Options:
+    - https://github.com/actix/actix 
+      docs - https://actix.rs/docs/actix/actor/
+    - https://github.com/slawlor/ractor
+      docs - https://slawlor.github.io/ractor/quickstart/
 - [ ] Handle server responses aggregation and display
 - [ ] Handle client command to server (selecting an item)
 - [ ] Implement a basic GUI using iced to use as the main interface
@@ -75,6 +81,7 @@ On the context of the launcher a *plugin* will run a server that will be connect
     - [ ] Implement protocol for server to respond with a list of items
     - [ ] Implement protocol for client to send command to server to execute
 - [ ] Implement protocol for client to discover servers running dynamically (config? auto-discovery?)
+
 
 ### Default Servers
 
