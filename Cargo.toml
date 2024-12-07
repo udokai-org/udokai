@@ -12,6 +12,7 @@ license = "MIT"
 # TODO: adds a gui package using iced
 # gui = { path = "gui" }
 udokai-tui = { version = "0.0.1", path = "./tui" }
+udokai-supervisor = { version = "0.0.1", path = "./supervisor" }
 udokai-shared.workspace = true
 
 # External pkgs
@@ -33,4 +34,4 @@ log4rs = "1.3.0"
 udokai-shared = { version = "0.0.1", path = "./shared" }
 
 [workspace]
-members = [ "client", "server", "shared", "tui"]
+members = [ "client", "server", "shared", "supervisor", "tui"]

@@ -4,9 +4,14 @@ use udokai_tui as tui;
 use udokai_shared as shared;
 
 use std::{io::{BufRead, BufReader, Write}, process::Stdio, sync::{Arc, Mutex}, thread};
-use std::process::{Command};
+// use std::process::{Command};
+use udokai_supervisor;
 
-fn main() -> std::io::Result<()> {
+fn main() { 
+    udokai_supervisor::start();
+}
+
+fn ____main() -> std::io::Result<()> {
     shared::setup_logger("/tmp/main.log")
         .expect("Failed to setup logger on main");
     log::info!("-----------------------");
